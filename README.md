@@ -62,9 +62,8 @@
 }
 
 
-Ответ от API DADATA
-json
-Copy
+#### Ответ от API DADATA
+```json
 {
   "name_payment": "Сбербанк",
   "name_full": "ПАО Сбербанк",
@@ -74,8 +73,8 @@ Copy
   "address1": "г Москва, ул Вавилова, д 19"
 }
 
-Запрос данных о компании по ИНН
-json
+#### Запрос данных о компании по ИНН
+```json
 {
   "headers": {
     "Content-Type": "application/json",
@@ -85,9 +84,8 @@ json
     "query": "7707083893"
   }
 }
-Ответ от API DADATA
-
-json
+#### Ответ от API DADATA
+```json
 {
   "type": "Организация",
   "name_short": "ПАО Сбербанк",
