@@ -1,0 +1,220 @@
+[
+    {
+        "id": "c8859edef08ff40c",
+        "type": "inject",
+        "z": "6356bd53d40f96d6",
+        "name": "Запуск с БИК",
+        "props": [
+            {
+                "p": "bic",
+                "v": "044525225",
+                "vt": "str"
+            },
+            {
+                "p": "token",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 210,
+        "y": 680,
+        "wires": [
+            [
+                "9742914ce9696f94"
+            ]
+        ]
+    },
+    {
+        "id": "9742914ce9696f94",
+        "type": "function",
+        "z": "6356bd53d40f96d6",
+        "name": "Формирование запроса",
+        "func": "msg.headers = {\n    'Content-Type': 'application/json',\n    'Authorization': 'Token ' + msg.token\n};\nmsg.payload = {\n    \"query\": msg.bic\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 680,
+        "wires": [
+            [
+                "2fccb4587cd6afa6"
+            ]
+        ]
+    },
+    {
+        "id": "2fccb4587cd6afa6",
+        "type": "http request",
+        "z": "6356bd53d40f96d6",
+        "name": "Запрос к API DaData",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/bank",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 720,
+        "y": 680,
+        "wires": [
+            [
+                "1b838766d27f4e7a"
+            ]
+        ]
+    },
+    {
+        "id": "1b838766d27f4e7a",
+        "type": "function",
+        "z": "6356bd53d40f96d6",
+        "name": "Обработка ответа",
+        "func": "if (msg.payload.suggestions && msg.payload.suggestions.length > 0) {\n    var data = msg.payload.suggestions[0].data;\n    msg.payload = {\n        \"name_payment\": data.name && data.name.payment || \"\",\n        \"name_full\": data.name && data.name.full || \"\",\n        \"bic\": data.bic,\n        \"swift\": data.swift,\n        \"kassch\": data.correspondent_account,\n        \"address1\": data.address.value\n    };\n} else {\n    msg.payload = {\n        \"error\": \"Банк не найден или неверный Token\"\n    };\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 680,
+        "wires": [
+            [
+                "12ca033930769fa5"
+            ]
+        ]
+    },
+    {
+        "id": "12ca033930769fa5",
+        "type": "debug",
+        "z": "6356bd53d40f96d6",
+        "name": "Вывод результата",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1130,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "58179f40d053c820",
+        "type": "inject",
+        "z": "6356bd53d40f96d6",
+        "name": "Запуск с ИНН или ОГРН",
+        "props": [
+            {
+                "p": "inn",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "p": "token",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 250,
+        "y": 740,
+        "wires": [
+            [
+                "49c17e0bbe2389c2"
+            ]
+        ]
+    },
+    {
+        "id": "49c17e0bbe2389c2",
+        "type": "function",
+        "z": "6356bd53d40f96d6",
+        "name": "Формирование запроса",
+        "func": "msg.headers = {\n    'Content-Type': 'application/json',\n    'Authorization': 'Token ' + msg.token\n};\nmsg.payload = {\n    \"query\": msg.inn\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 740,
+        "wires": [
+            [
+                "7a7c69ad3ede33a1"
+            ]
+        ]
+    },
+    {
+        "id": "7a7c69ad3ede33a1",
+        "type": "http request",
+        "z": "6356bd53d40f96d6",
+        "name": "Запрос к API DaData",
+        "method": "POST",
+        "ret": "obj",
+        "url": "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 720,
+        "y": 740,
+        "wires": [
+            [
+                "a7018cf23c7f8e3f"
+            ]
+        ]
+    },
+    {
+        "id": "ec4352463f910b99",
+        "type": "debug",
+        "z": "6356bd53d40f96d6",
+        "name": "Вывод результата",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1130,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "a7018cf23c7f8e3f",
+        "type": "function",
+        "z": "6356bd53d40f96d6",
+        "name": "Обработка ответа",
+        "func": "function typeDescription(type) {\n  var TYPES = {\n    'INDIVIDUAL': 'Индивидуальный предприниматель',\n    'LEGAL': 'Организация'\n  };\n  return TYPES[type];\n}\n\nfunction toGenitiveCase(fullName) {\n  if (!fullName) return '';\n  var parts = fullName.split(' ');\n  if (parts.length === 0) return '';\n\n  // Обработка фамилии\n  function transformLastName(lastName) {\n    if (lastName.includes('-')) {\n      return lastName.split('-').map(part => {\n        if (part.endsWith('ова') || part.endsWith('ева') || part.endsWith('ина')) {\n          return part.slice(0, -1) + 'ой';\n        } else if (part.endsWith('ая')) {\n          return part.slice(0, -2) + 'ой';\n        } else if (part.endsWith('яя')) {\n          return part.slice(0, -2) + 'ей';\n        } else if (part.endsWith('ий')) {\n          return part.slice(0, -2) + 'ого';\n        } else if (part.endsWith('ой')) {\n          return part.slice(0, -2) + 'ого';\n        } else if (part.endsWith('ёв') || part.endsWith('ев') || part.endsWith('ов')) {\n          return part + 'а';\n        } else if (part.endsWith('ин') || part.endsWith('ын')) {\n          return part + 'а';\n        } else if (part.endsWith('ь')) {\n          return part.slice(0, -1) + 'я';\n        } else if (/[бвгджзклмнпрстфхцчшщ]$/.test(part)) { // Для фамилий, оканчивающихся на согласную\n          return part + 'а';\n        }\n        return part;\n      }).join('-');\n    } else {\n      if (lastName.endsWith('ова') || lastName.endsWith('ева') || lastName.endsWith('ина')) {\n        return lastName.slice(0, -1) + 'ой';\n      } else if (lastName.endsWith('ая')) {\n        return lastName.slice(0, -2) + 'ой';\n      } else if (lastName.endsWith('яя')) {\n        return lastName.slice(0, -2) + 'ей';\n      } else if (lastName.endsWith('ий')) {\n        return lastName.slice(0, -2) + 'ого';\n      } else if (lastName.endsWith('ой')) {\n        return lastName.slice(0, -2) + 'ого';\n      } else if (lastName.endsWith('ёв') || lastName.endsWith('ев') || lastName.endsWith('ов')) {\n        return lastName + 'а';\n      } else if (lastName.endsWith('ин') || lastName.endsWith('ын')) {\n        return lastName + 'а';\n      } else if (lastName.endsWith('ь')) {\n        return lastName.slice(0, -1) + 'я';\n      } else if (/[бвгджзклмнпрстфхцчшщ]$/.test(lastName)) { // Для фамилий, оканчивающихся на согласную\n        return lastName + 'а';\n      }\n      return lastName;\n    }\n  }\n\n  // Преобразуем фамилию в родительный падеж\n  var lastName = transformLastName(parts[0]);\n\n  // Преобразуем имя в родительный падеж\n  var firstName = parts.length > 1 ? parts[1] : '';\n  if (firstName.endsWith('й') || firstName.endsWith('ь')) {\n    firstName = firstName.slice(0, -1) + 'я';\n  } else if (firstName.endsWith('а')) {\n    firstName = firstName.slice(0, -1) + 'ы';\n  } else if (firstName.endsWith('я')) {\n    firstName = firstName.slice(0, -1) + 'и';\n  } else if (firstName.endsWith('н')) {\n    firstName += 'а';\n  } else if (firstName.endsWith('р')) { // Для имени \"Шахрияр\"\n    firstName += 'а';\n  }\n\n  // Преобразуем отчество в родительный падеж\n  var middleName = parts.length > 2 ? parts[2] : '';\n  if (middleName.endsWith('ч')) {\n    middleName += 'а';\n  } else if (middleName.endsWith('на')) {\n    middleName = middleName.slice(0, -1) + 'ы';\n  } else if (middleName.endsWith('н')) { // Для отчества \"Султан\"\n    middleName += 'а';\n  }\n\n  // Обработка суффиксов \"Оглы\" и \"Кызы\"\n  var suffix = parts.length > 3 ? parts[3] : '';\n  if (suffix === 'Оглы' || suffix === 'Кызы') {\n    middleName += ' ' + suffix;\n  }\n\n  return [lastName, firstName, middleName].filter(Boolean).join(' ');\n}\n\nfunction toShortName(fullName) {\n  if (!fullName) return '';\n  var parts = fullName.split(' ');\n  if (parts.length === 0) return '';\n\n  var lastName = parts[0];\n  var firstName = parts.length > 1 ? parts[1].charAt(0) + '.' : '';\n  var middleName = parts.length > 2 ? parts[2].charAt(0) + '.' : '';\n\n  // Обработка суффиксов \"Оглы\" и \"Кызы\"\n  var suffix = parts.length > 3 ? parts[3] : '';\n  if (suffix === 'Оглы' || suffix === 'Кызы') {\n    middleName += ' ' + suffix;\n  }\n\n  // Объединяем инициалы без пробела\n  return [lastName, firstName + middleName].filter(Boolean).join(' ');\n}\n\n// Функция для определения пола по Ф.И.О.\nfunction determineGender(fullName) {\n  if (!fullName) return null;\n\n  var parts = fullName.split(' ');\n  if (parts.length < 2) return null;\n\n  var lastName = parts[0];\n  var firstName = parts[1];\n  var middleName = parts.length > 2 ? parts[2] : '';\n\n  // Определение по фамилии\n  if (lastName.endsWith('ова') || lastName.endsWith('ева') || lastName.endsWith('ина') || lastName.endsWith('ая') || lastName.endsWith('яя')) {\n    return 'female';\n  } else if (lastName.endsWith('ов') || lastName.endsWith('ев') || lastName.endsWith('ин') || lastName.endsWith('ый') || lastName.endsWith('ий')) {\n    return 'male';\n  }\n\n  // Определение по имени\n  if (firstName.endsWith('а') || firstName.endsWith('я')) {\n    return 'female';\n  } else if (firstName.endsWith('й') || firstName.endsWith('ь') || /[^ая]$/.test(firstName)) {\n    return 'male';\n  }\n\n  // Определение по отчеству\n  if (middleName.endsWith('вна') || middleName.endsWith('чна')) {\n    return 'female';\n  } else if (middleName.endsWith('вич') || middleName.endsWith('ич')) {\n    return 'male';\n  }\n\n  return null; // Если пол не удалось определить\n}\n\nif (msg.payload.suggestions && msg.payload.suggestions.length > 0) {\n  var data = msg.payload.suggestions[0].data;\n  var result = {\n    \"type\": typeDescription(data.type),\n    \"name_short\": data.name.short_with_opf || \"\",\n    \"inn\": data.inn,\n    \"kpp\": data.kpp || \"\",\n    \"ogrn\": data.ogrn,\n    \"address\": data.address.value\n  };\n\n  // Обработка для организаций\n  if (data.type === 'LEGAL' && data.management && data.management.name) {\n    result.management = data.management.name;\n    result.managementdoc = toGenitiveCase(data.management.name);\n    result.managementdocsh = toShortName(data.management.name);\n    result.gender = determineGender(data.management.name); // Определение пола\n  }\n\n  // Обработка для ИП\n  if (data.type === 'INDIVIDUAL' && data.name && data.name.full) {\n    result.management = data.name.full;\n    result.managementdoc = toGenitiveCase(data.name.full);\n    result.managementdocsh = toShortName(data.name.full);\n    result.gender = determineGender(data.name.full); // Определение пола\n\n    // Добавляем name_ip и name_short_up\n    result.name_ip = `ИНДИВИДУАЛЬНЫЙ ПРЕДПРИНИМАТЕЛЬ ${data.name.full.toUpperCase()}`;\n    result.name_short_up = `ИП ${data.name.full.toUpperCase()}`;\n  }\n\n  msg.payload = result;\n} else {\n  msg.payload = {\n    \"error\": \"Организация не найдена или неверный Token\"\n  };\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 740,
+        "wires": [
+            [
+                "ec4352463f910b99"
+            ]
+        ]
+    }
+]
