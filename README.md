@@ -6,7 +6,7 @@
 ![Описание фото](https://github.com/NodeRedBPM/DaData-Node-Red/blob/main/dadataflow.png)
 ---
 ## Как использовать
-1. Скачайте файл [flows.json](https://github.com/DaData-Node-Red/blob/main/dadataflow.json) из этого репозитория.
+1. Скачайте файл [dadataflows.json](https://github.com/DaData-Node-Red/blob/main/dadataflow.json) из этого репозитория.
 
 2. Импортируйте его в Node-RED.
    
