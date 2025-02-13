@@ -104,15 +104,12 @@
 #### Запрос данных о индивидуальном предпринимателе по ИНН или ОГРНИП
 ```json
 {
-  "type": "INDIVIDUAL",
-  "name": {
-    "full": "Греф Герман Оскарович",
-    "short_with_opf": "ИП Греф Г.О."
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Token YOUR_API_KEY"
   },
-  "inn": "1234567890",
-  "ogrn": "1234567890123",
-  "address": {
-    "value": "г Москва"
+  "payload": {
+    "query": "1234567890"
   }
 }
 ```
